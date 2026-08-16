@@ -97,7 +97,11 @@ with st.container():
         multiple_lines = st.selectbox("Multiple Lines", ["No", "Yes", "No phone service"])
         internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
         online_security = st.selectbox("Online Security", ["No", "Yes", "No internet service"])
+        online_backup = st.selectbox("Online Backup", ["No", "Yes", "No internet service"])
+        device_protection = st.selectbox("Device Protection", ["No", "Yes", "No internet service"])
         tech_support = st.selectbox("Tech Support", ["No", "Yes", "No internet service"])
+        streaming_tv = st.selectbox("Streaming TV", ["No", "Yes", "No internet service"])
+        streaming_movies = st.selectbox("Streaming Movies", ["No", "Yes", "No internet service"])
 
     with col3:
         st.subheader("💳 Account & Billing")
@@ -135,7 +139,7 @@ if st.button("🚀 Analyze Churn Risk"):
     t_2_4y = 1 if 24 < tenure <= 48 else 0
     t_4p_y = 1 if tenure > 48 else 0
 
-    # ربط المدخلات بأسماء الأعمدة الصحيحة في model_columns.pkl
+    # ربط المدخلات بأسماء الأعمدة الصحيحة في model_columns.pkl بناءً على الخيارات الحقيقية للمستخدم
     raw_input = {
         'gender': 1 if gender == "Male" else 0,
         'SeniorCitizen': 1 if senior_citizen == "Yes" else 0,
@@ -150,11 +154,11 @@ if st.button("🚀 Analyze Churn Risk"):
         'InternetService_Fiber optic': 1 if internet_service == "Fiber optic" else 0,
         'InternetService_No': 1 if internet_service == "No" else 0,
         'OnlineSecurity_Yes': 1 if online_security == "Yes" else 0,
-        'OnlineBackup_Yes': 0,
-        'DeviceProtection_Yes': 0,
+        'OnlineBackup_Yes': 1 if online_backup == "Yes" else 0,
+        'DeviceProtection_Yes': 1 if device_protection == "Yes" else 0,
         'TechSupport_Yes': 1 if tech_support == "Yes" else 0,
-        'StreamingTV_Yes': 0,
-        'StreamingMovies_Yes': 0,
+        'StreamingTV_Yes': 1 if streaming_tv == "Yes" else 0,
+        'StreamingMovies_Yes': 1 if streaming_movies == "Yes" else 0,
         'Contract_One year': 1 if contract == "One year" else 0,
         'Contract_Two year': 1 if contract == "Two year" else 0,
         'PaymentMethod_Credit card (automatic)': 1 if payment_method == "Credit card (automatic)" else 0,
