@@ -5,7 +5,7 @@ An end-to-end Machine Learning web application designed to predict customer chur
 ---
 
 ## 🚀 Live Demo
-You can test the live application here: [Streamlit App Link](https://telco-customer-churn-prediction-6maww7csk4lbdvmmtgziqh.streamlit.app)
+You can test the live application here : [https://telco-customer-churn-prediction-6maww7csk4lbdvmmtgziqh.streamlit.app/]
 
 ---
 
@@ -67,14 +67,3 @@ Rokaia Hassan
 
 GitHub Profile
 
-
-
-
-### إزاي تحطيه على جيت هاب؟
-1. افتحي ريبوزيتوري المشروع على جيت هاب.
-2. اضغطي على **Add file** وبعدين **Create new file**.
-3. سمي الملف `README.md`.
-4. حطي الكود اللي فوق ده (عدلي رابط اللينك لو حابة تضيفي لينك الجيت هاب بتاعك صح).
-5. اضغطي **Commit changes**.
-
-هيدي للمشروع مظهر احترافي جداً في ثوانٍ!
