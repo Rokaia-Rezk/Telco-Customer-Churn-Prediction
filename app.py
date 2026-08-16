@@ -180,7 +180,25 @@ if st.button("🚀 Analyze Churn Risk"):
     res_col1, res_col2 = st.columns([1, 2])
     
     with res_col1:
-        st.metric("Churn Probability", f"{churn_prob:.1f}%")
+        st.markdown("**Churn Probability**")
+        
+        # تحديد اللون النيون الديناميكي بناءً على النسبة
+        if churn_prob < 30:
+            neon_color = "#00FF66"  # أخضر نيون ممتاز
+        elif 30 <= churn_prob <= 60:
+            neon_color = "#FFA500"  # برتقالي نيون متوسط
+        else:
+            neon_color = "#FF3333"  # أحمر نيون خطر عالي
+            
+        st.markdown(
+            f"""
+            <div style="font-size: 42px; font-weight: bold; color: {neon_color}; text-shadow: 0 0 12px {neon_color}66; margin-bottom: 10px;">
+                {churn_prob:.1f}%
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
         if churn_prob >= 50:
             st.error("⚠️ High Risk of Churn")
         else:
