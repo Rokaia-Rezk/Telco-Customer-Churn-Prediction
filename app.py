@@ -112,15 +112,15 @@ with st.container():
 st.markdown("---")
 
 # Recommendation Engine Logic
-def get_recommendations(data):
+def get_recommendations(contract_type, payment_meth, tech_sup, online_sec):
     recs = []
-    if data.get('Contract_Month-to-month') == 1:
+    if contract_type == "Month-to-month":
         recs.append("📌 Offer a 1-year or 2-year contract with a 15% promotional discount to increase commitment.")
-    if data.get('PaymentMethod_Electronic check') == 1:
+    if payment_meth == "Electronic check":
         recs.append("📌 Encourage switching to Automatic Payment (Credit Card/Bank Transfer) with a $5 bill credit.")
-    if data.get('TechSupport_No') == 1:
+    if tech_sup == "No":
         recs.append("📌 Provide 3 months of complimentary VIP Tech Support to address technical dissatisfaction.")
-    if data.get('OnlineSecurity_No') == 1:
+    if online_sec == "No":
         recs.append("📌 Include free Online Security features to improve service value proposition.")
     if len(recs) == 0:
         recs.append("🌟 Customer risk is low. Recommend inclusion in loyalty rewards program.")
@@ -128,51 +128,59 @@ def get_recommendations(data):
 
 # Prediction Action
 if st.button("🚀 Analyze Churn Risk"):
-    # Complete Mapping for all UI options to match model features dynamically
+    # حساب فئات الـ tenure التفصيلية بدقة لتطابق الـ Model
+    t_3_6 = 1 if 3 <= tenure <= 6 else 0
+    t_6_12 = 1 if 6 < tenure <= 12 else 0
+    t_1_2y = 1 if 12 < tenure <= 24 else 0
+    t_2_4y = 1 if 24 < tenure <= 48 else 0
+    t_4p_y = 1 if tenure > 48 else 0
+
+    # ربط المدخلات بأسماء الأعمدة الصحيحة في model_columns.pkl
     raw_input = {
+        'gender': 1 if gender == "Male" else 0,
+        'SeniorCitizen': 1 if senior_citizen == "Yes" else 0,
+        'Partner': 1 if partner == "Yes" else 0,
+        'Dependents': 1 if dependents == "Yes" else 0,
         'tenure': tenure,
+        'PhoneService': 1 if phone_service == "Yes" else 0,
+        'PaperlessBilling': 1 if paperless_billing == "Yes" else 0,
         'MonthlyCharges': monthly_charges,
         'TotalCharges': total_charges,
-        'SeniorCitizen': 1 if senior_citizen == "Yes" else 0,
-        'gender_Male': 1 if gender == "Male" else 0,
-        'SeniorCitizen_1': 1 if senior_citizen == "Yes" else 0,
-        'Partner_Yes': 1 if partner == "Yes" else 0,
-        'Dependents_Yes': 1 if dependents == "Yes" else 0,
-        'PhoneService_Yes': 1 if phone_service == "Yes" else 0,
-        'MultipleLines_No phone service': 1 if multiple_lines == "No phone service" else 0,
         'MultipleLines_Yes': 1 if multiple_lines == "Yes" else 0,
         'InternetService_Fiber optic': 1 if internet_service == "Fiber optic" else 0,
         'InternetService_No': 1 if internet_service == "No" else 0,
-        'OnlineSecurity_No internet service': 1 if online_security == "No internet service" else 0,
         'OnlineSecurity_Yes': 1 if online_security == "Yes" else 0,
-        'OnlineSecurity_No': 1 if online_security == "No" else 0,
-        'TechSupport_No internet service': 1 if tech_support == "No internet service" else 0,
+        'OnlineBackup_Yes': 0,
+        'DeviceProtection_Yes': 0,
         'TechSupport_Yes': 1 if tech_support == "Yes" else 0,
-        'TechSupport_No': 1 if tech_support == "No" else 0,
-        'Contract_Month-to-month': 1 if contract == "Month-to-month" else 0,
+        'StreamingTV_Yes': 0,
+        'StreamingMovies_Yes': 0,
         'Contract_One year': 1 if contract == "One year" else 0,
         'Contract_Two year': 1 if contract == "Two year" else 0,
-        'PaperlessBilling_Yes': 1 if paperless_billing == "Yes" else 0,
         'PaymentMethod_Credit card (automatic)': 1 if payment_method == "Credit card (automatic)" else 0,
         'PaymentMethod_Electronic check': 1 if payment_method == "Electronic check" else 0,
         'PaymentMethod_Mailed check': 1 if payment_method == "Mailed check" else 0,
-        'PaymentMethod_Bank transfer (automatic)': 1 if payment_method == "Bank transfer (automatic)" else 0,
+        'tenure_detailed_1-2 Years': t_1_2y,
+        'tenure_detailed_2-4 Years': t_2_4y,
+        'tenure_detailed_3-6 Months': t_3_6,
+        'tenure_detailed_4+ Years': t_4p_y,
+        'tenure_detailed_6-12 Months': t_6_12,
     }
 
     input_df = pd.DataFrame([raw_input])
     
-    # Fill any missing encoded features expected by the trained model
+    # التأكد من تطابق الأعمدة وترتيبها مع ما تدرب عليه الموديل
     for col in model_columns:
         if col not in input_df.columns:
             input_df[col] = 0
             
     input_df = input_df[model_columns]
 
-    # Transform numeric features using saved Scaler
+    # تحويل القيم الرقمية باستخدام الـ Scaler المحفوظ
     num_cols = ['tenure', 'MonthlyCharges', 'TotalCharges']
     input_df[num_cols] = scaler.transform(input_df[num_cols])
 
-    # Model prediction
+    # توقع النسبة
     churn_prob = model.predict_proba(input_df)[0][1] * 100
 
     st.markdown("### 📊 Prediction Output")
@@ -182,13 +190,12 @@ if st.button("🚀 Analyze Churn Risk"):
     with res_col1:
         st.markdown("**Churn Probability**")
         
-        # تحديد اللون النيون الديناميكي بناءً على النسبة
         if churn_prob < 30:
-            neon_color = "#00FF66"  # أخضر نيون ممتاز
+            neon_color = "#00FF66"  # أخضر نيون
         elif 30 <= churn_prob <= 60:
-            neon_color = "#FFA500"  # برتقالي نيون متوسط
+            neon_color = "#FFA500"  # برتقالي نيون
         else:
-            neon_color = "#FF3333"  # أحمر نيون خطر عالي
+            neon_color = "#FF3333"  # أحمر نيون
             
         st.markdown(
             f"""
@@ -206,6 +213,6 @@ if st.button("🚀 Analyze Churn Risk"):
 
     with res_col2:
         st.subheader("💡 Recommended Retention Actions")
-        recommendations = get_recommendations(raw_input)
+        recommendations = get_recommendations(contract, payment_method, tech_support, online_security)
         for rec in recommendations:
             st.write(rec)
