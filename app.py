@@ -11,7 +11,6 @@ import joblib
 # 1. Page Configuration
 st.set_page_config(
     page_title="Telco Churn Predictor",
-    page_icon="🔮",
     layout="wide"
 )
 
@@ -75,7 +74,7 @@ except Exception as e:
     st.error(f"Error loading model assets. Please verify 'models' folder contents: {e}")
 
 # Header Section
-st.title("🔮 Customer Churn Prediction Intelligence")
+st.title("Customer Churn Prediction Intelligence")
 st.markdown("Analyze customer profile parameters to predict churn risk and generate automated retention strategies.")
 st.markdown("---")
 
@@ -84,7 +83,7 @@ with st.container():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.subheader("👤 Customer & Demographics")
+        st.subheader("Customer & Demographics")
         gender = st.selectbox("Gender", ["Male", "Female"])
         senior_citizen = st.selectbox("Senior Citizen", ["No", "Yes"])
         partner = st.selectbox("Has Partner", ["No", "Yes"])
@@ -92,7 +91,7 @@ with st.container():
         tenure = st.number_input("Tenure (Months)", min_value=1, max_value=72, value=12)
 
     with col2:
-        st.subheader("📶 Core Services")
+        st.subheader("Core Services")
         phone_service = st.selectbox("Phone Service", ["No", "Yes"])
         multiple_lines = st.selectbox("Multiple Lines", ["No", "Yes"])
         internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
@@ -100,7 +99,7 @@ with st.container():
         tech_support = st.selectbox("Tech Support", ["No", "Yes"])
 
     with col3:
-        st.subheader("💳 Account & Billing")
+        st.subheader("Account & Billing")
         contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
         paperless_billing = st.selectbox("Paperless Billing", ["No", "Yes"])
         payment_method = st.selectbox("Payment Method", [
@@ -115,19 +114,19 @@ st.markdown("---")
 def get_recommendations(contract_type, payment_meth, tech_sup, online_sec):
     recs = []
     if contract_type == "Month-to-month":
-        recs.append("📌 Offer a 1-year or 2-year contract with a 15% promotional discount to increase commitment.")
+        recs.append("Offer a 1-year or 2-year contract with a 15% promotional discount to increase commitment.")
     if payment_meth == "Electronic check":
-        recs.append("📌 Encourage switching to Automatic Payment (Credit Card/Bank Transfer) with a $5 bill credit.")
+        recs.append("Encourage switching to Automatic Payment (Credit Card/Bank Transfer) with a $5 bill credit.")
     if tech_sup == "No":
-        recs.append("📌 Provide 3 months of complimentary VIP Tech Support to address technical dissatisfaction.")
+        recs.append("Provide 3 months of complimentary VIP Tech Support to address technical dissatisfaction.")
     if online_sec == "No":
-        recs.append("📌 Include free Online Security features to improve service value proposition.")
+        recs.append("Include free Online Security features to improve service value proposition.")
     if len(recs) == 0:
-        recs.append("🌟 Customer risk is low. Recommend inclusion in loyalty rewards program.")
+        recs.append("Customer risk is low. Recommend inclusion in loyalty rewards program.")
     return recs
 
 # Prediction Action
-if st.button("🚀 Analyze Churn Risk"):
+if st.button("Analyze Churn Risk"):
     # حساب فئات الـ tenure التفصيلية بدقة لتطابق الـ Model
     t_3_6 = 1 if 3 <= tenure <= 6 else 0
     t_6_12 = 1 if 6 < tenure <= 12 else 0
@@ -183,7 +182,7 @@ if st.button("🚀 Analyze Churn Risk"):
     # توقع النسبة
     churn_prob = model.predict_proba(input_df)[0][1] * 100
 
-    st.markdown("### 📊 Prediction Output")
+    st.markdown("### Prediction Output")
     
     res_col1, res_col2 = st.columns([1, 2])
     
@@ -207,12 +206,16 @@ if st.button("🚀 Analyze Churn Risk"):
         )
         
         if churn_prob >= 50:
-            st.error("⚠️ High Risk of Churn")
+            st.error("High Risk of Churn")
         else:
-            st.success("✅ Low Churn Risk")
+            st.success("Low Churn Risk")
 
     with res_col2:
-        st.subheader("💡 Recommended Retention Actions")
+        st.subheader("Recommended Retention Actions")
         recommendations = get_recommendations(contract, payment_method, tech_support, online_security)
         for rec in recommendations:
             st.write(rec)
+            
+            
+            
+            
