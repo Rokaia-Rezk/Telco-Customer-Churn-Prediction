@@ -21,12 +21,12 @@ custom_css = """
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
 :root {
-    --bg: #161616;
-    --surface: #262626;
-    --border: #393939;
+    --bg: #17111f;
+    --surface: #251a35;
+    --border: #3f2c58;
     --text: #F4F4F4;
-    --text-muted: #A8A8A8;
-    --accent: #4589FF;
+    --text-muted: #b9a8d4;
+    --accent: #A56EFF;
     --risk-high: #FA4D56;
     --risk-medium: #F1C21B;
     --risk-low: #42BE65;
@@ -37,8 +37,8 @@ custom_css = """
 .stApp {
     background-color: var(--bg);
     background-image:
-        radial-gradient(circle, rgba(69,137,255,0.16) 1px, transparent 1px),
-        repeating-linear-gradient(135deg, rgba(69,137,255,0.05) 0px, rgba(69,137,255,0.05) 1px, transparent 1px, transparent 28px);
+        radial-gradient(circle, rgba(165,110,255,0.18) 1px, transparent 1px),
+        repeating-linear-gradient(135deg, rgba(165,110,255,0.06) 0px, rgba(165,110,255,0.06) 1px, transparent 1px, transparent 28px);
     background-size: 26px 26px, 40px 40px;
     color: var(--text);
 }
@@ -111,7 +111,7 @@ div[data-baseweb="select"] > div, .stNumberInput input {
     transition: background-color 0.15s ease;
 }
 .stButton>button:hover {
-    background-color: #6FA1FF;
+    background-color: #BE95FF;
 }
 
 /* Alerts: flat card with left accent bar instead of default rounded pill */
@@ -165,7 +165,7 @@ div[data-baseweb="select"] > div, .stNumberInput input {
     position: relative;
     font-size: 46px;
     animation: float-orb 3.2s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px rgba(69,137,255,0.5));
+    filter: drop-shadow(0 0 10px rgba(165,110,255,0.55));
 }
 </style>
 """
