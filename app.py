@@ -32,9 +32,14 @@ custom_css = """
     --risk-low: #42BE65;
 }
 
-/* Background */
+/* Background: dark base + subtle network dot-grid + faint diagonal signal lines,
+   evoking a telecom/connectivity feel instead of flat empty black */
 .stApp {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(circle, rgba(69,137,255,0.16) 1px, transparent 1px),
+        repeating-linear-gradient(135deg, rgba(69,137,255,0.05) 0px, rgba(69,137,255,0.05) 1px, transparent 1px, transparent 28px);
+    background-size: 26px 26px, 40px 40px;
     color: var(--text);
 }
 
@@ -74,6 +79,15 @@ div[data-baseweb="select"] > div, .stNumberInput input {
     border: 1px solid var(--border) !important;
     border-radius: 2px !important;
     color: var(--text) !important;
+}
+
+/* Disabled inputs (Auto-calculated Total Charges) use -webkit-text-fill-color
+   separately from color in WebKit browsers — without this override the text
+   is invisible against the dark background */
+.stNumberInput input:disabled {
+    -webkit-text-fill-color: var(--text) !important;
+    color: var(--text) !important;
+    opacity: 1 !important;
 }
 
 /* Section containers */
@@ -118,6 +132,41 @@ div[data-baseweb="select"] > div, .stNumberInput input {
 .metric-number {
     font-family: 'IBM Plex Mono', monospace;
 }
+
+/* Cute floating crystal ball + pulsing signal rings (landing page) */
+@keyframes float-orb {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes signal-pulse {
+    0%   { transform: scale(0.6); opacity: 0.55; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+.orb-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 18px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.signal-ring {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    animation: signal-pulse 2.6s ease-out infinite;
+}
+.signal-ring.ring-2 { animation-delay: 0.9s; }
+.signal-ring.ring-3 { animation-delay: 1.8s; }
+.orb-emoji {
+    position: relative;
+    font-size: 46px;
+    animation: float-orb 3.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(69,137,255,0.5));
+}
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
@@ -148,9 +197,15 @@ if "started" not in st.session_state:
     st.session_state.started = False
 
 if not st.session_state.started:
-    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 8vh;'></div>", unsafe_allow_html=True)
     st.markdown(
         """
+        <div class="orb-wrap">
+            <div class="signal-ring"></div>
+            <div class="signal-ring ring-2"></div>
+            <div class="signal-ring ring-3"></div>
+            <div class="orb-emoji">🔮</div>
+        </div>
         <div style="text-align:center; max-width:640px; margin:0 auto;">
             <div style="font-size:13px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px;">
                 Telco Churn Predictor
@@ -224,7 +279,20 @@ with st.container():
         monthly_charges = st.number_input("Monthly Charges ($)", min_value=18.0, max_value=120.0, value=65.0)
         # Total Charges يتحسب أوتوماتيك = عدد شهور الاشتراك × الفاتورة الشهرية
         total_charges = tenure * monthly_charges
-        st.number_input("Total Charges ($) — Auto-calculated", value=total_charges, disabled=True)
+        st.markdown(
+            f"""
+            <div style="margin-bottom:4px;">
+                <div style="font-size:13px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">
+                    Total Charges ($) — Auto-calculated
+                </div>
+                <div style="border:1px solid var(--border); border-radius:2px; background-color:var(--surface);
+                            padding:10px 14px; font-size:15px; color:var(--text); font-family:'IBM Plex Mono', monospace;">
+                    {total_charges:,.2f}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 st.markdown("---")
 
