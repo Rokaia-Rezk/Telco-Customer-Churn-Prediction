@@ -11,52 +11,168 @@ import joblib
 # 1. Page Configuration
 st.set_page_config(
     page_title="Telco Churn Predictor",
+    page_icon="🔮",
     layout="wide"
 )
 
-# 2. Modern Purple Custom CSS Styling
+# 2. Professional Data-Dashboard Styling (IBM Carbon–inspired, fitting the IBM Telco dataset)
 custom_css = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+    --bg: #161616;
+    --surface: #262626;
+    --border: #393939;
+    --text: #F4F4F4;
+    --text-muted: #A8A8A8;
+    --accent: #4589FF;
+    --risk-high: #FA4D56;
+    --risk-medium: #F1C21B;
+    --risk-low: #42BE65;
+}
+
 /* Background */
 .stApp {
-    background: linear-gradient(135deg, #0f0c1b 0%, #1a102f 50%, #2a1240 100%);
-    color: #ffffff;
+    background: var(--bg);
+    color: var(--text);
+}
+
+html, body, [class*="css"] {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
 }
 
 /* Headings */
 h1, h2, h3, h4 {
-    color: #e0b0ff !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Fix Input Labels Visibility */
-label, [data-testid="stWidgetLabel"] p, .stMarkdown p {
-    color: #e9d5ff !important;
+    color: var(--text) !important;
+    font-family: 'IBM Plex Sans', sans-serif;
     font-weight: 600 !important;
-    font-size: 15px !important;
+    letter-spacing: -0.01em;
 }
 
-/* Button Styling */
+h1 {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+}
+
+/* Input Labels */
+label, [data-testid="stWidgetLabel"] p {
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.stMarkdown p {
+    color: var(--text-muted) !important;
+}
+
+/* Input widgets: flat surfaces, hairline borders, no rounded-bubble look */
+div[data-baseweb="select"] > div, .stNumberInput input {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 2px !important;
+    color: var(--text) !important;
+}
+
+/* Section containers */
+[data-testid="column"] {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 20px;
+}
+
+/* Button: flat, solid, no gradient/glow */
 .stButton>button {
-    background: linear-gradient(90deg, #7b2cbf 0%, #9d4edd 100%);
-    color: white;
+    background-color: var(--accent);
+    color: #161616;
     border: none;
-    border-radius: 10px;
+    border-radius: 2px;
     padding: 12px 28px;
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 600;
     width: 100%;
-    transition: all 0.3s ease;
+    transition: background-color 0.15s ease;
 }
 .stButton>button:hover {
-    background: linear-gradient(90deg, #9d4edd 0%, #c77dff 100%);
-    box-shadow: 0px 4px 15px rgba(157, 78, 221, 0.4);
+    background-color: #6FA1FF;
+}
+
+/* Alerts: flat card with left accent bar instead of default rounded pill */
+[data-testid="stAlert"] {
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 2px !important;
+    border-left: 3px solid var(--text-muted) !important;
+}
+[data-testid="stAlertContentError"], [data-testid="stAlertContentError"] p {
+    color: var(--risk-high) !important;
+}
+[data-testid="stAlertContentSuccess"], [data-testid="stAlertContentSuccess"] p {
+    color: var(--risk-low) !important;
+}
+
+/* Data / metric numbers use the monospaced Plex Mono */
+.metric-number {
+    font-family: 'IBM Plex Mono', monospace;
 }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# 3. Load Saved Artifacts Safely
+# Sidebar — project credit + repository link
+with st.sidebar:
+    st.markdown(
+        """
+        <div style="padding: 8px 0 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 16px;">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Project</div>
+            <div style="font-size: 15px; color: var(--text); font-weight: 600; margin-top: 4px;">Telco Churn Predictor</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.link_button("View on GitHub", "https://github.com/Rokaia-Rezk/Telco-Customer-Churn-Prediction", use_container_width=True)
+    st.markdown(
+        """
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 16px;">
+            Built by <span style="color: var(--text);">Rokaia Rezk</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# 3. Landing / Welcome Screen
+if "started" not in st.session_state:
+    st.session_state.started = False
+
+if not st.session_state.started:
+    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style="text-align:center; max-width:640px; margin:0 auto;">
+            <div style="font-size:13px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px;">
+                Telco Churn Predictor
+            </div>
+            <h1 style="border:none; font-size:38px; margin-bottom:18px;">Hi there.</h1>
+            <p style="font-size:17px; color:var(--text-muted); line-height:1.6;">
+                Every customer leaves a trail before they leave for good.<br>
+                Ready to find out if yours is about to walk away?
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.write("")
+    spacer1, center, spacer2 = st.columns([2, 1, 2])
+    with center:
+        if st.button("I'm Ready", use_container_width=True):
+            st.session_state.started = True
+            st.rerun()
+    st.stop()
+
+# 4. Load Saved Artifacts Safely
 @st.cache_resource
 def load_assets():
     model_path = os.path.join('models', 'logistic_regression_model.pkl')
@@ -106,7 +222,9 @@ with st.container():
             "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"
         ])
         monthly_charges = st.number_input("Monthly Charges ($)", min_value=18.0, max_value=120.0, value=65.0)
-        total_charges = st.number_input("Total Charges ($)", min_value=18.0, max_value=8500.0, value=780.0)
+        # Total Charges يتحسب أوتوماتيك = عدد شهور الاشتراك × الفاتورة الشهرية
+        total_charges = tenure * monthly_charges
+        st.number_input("Total Charges ($) — Auto-calculated", value=total_charges, disabled=True)
 
 st.markdown("---")
 
@@ -183,39 +301,73 @@ if st.button("Analyze Churn Risk"):
     churn_prob = model.predict_proba(input_df)[0][1] * 100
 
     st.markdown("### Prediction Output")
-    
+
     res_col1, res_col2 = st.columns([1, 2])
-    
+
     with res_col1:
-        st.markdown("**Churn Probability**")
-        
         if churn_prob < 30:
-            neon_color = "#00FF66"  # أخضر نيون
-        elif 30 <= churn_prob <= 60:
-            neon_color = "#FFA500"  # برتقالي نيون
+            risk_color = "var(--risk-low)"
+            risk_label = "Low Risk"
+        elif churn_prob <= 60:
+            risk_color = "var(--risk-medium)"
+            risk_label = "Medium Risk"
         else:
-            neon_color = "#FF3333"  # أحمر نيون
-            
+            risk_color = "var(--risk-high)"
+            risk_label = "High Risk"
+
+        marker_pos = min(max(churn_prob, 0), 100)
+
         st.markdown(
             f"""
-            <div style="font-size: 42px; font-weight: bold; color: {neon_color}; text-shadow: 0 0 12px {neon_color}66; margin-bottom: 10px;">
-                {churn_prob:.1f}%
+            <div style="border:1px solid var(--border); border-radius:2px; padding:20px; background-color:var(--surface);">
+                <div style="font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">
+                    Churn Probability
+                </div>
+                <div class="metric-number" style="font-size:40px; font-weight:600; color:{risk_color}; line-height:1;">
+                    {churn_prob:.1f}%
+                </div>
+                <div style="font-size:13px; font-weight:600; color:{risk_color}; margin-top:6px; margin-bottom:16px;">
+                    {risk_label}
+                </div>
+                <div style="position:relative; height:6px; border-radius:3px;
+                            background:linear-gradient(90deg, var(--risk-low) 0%, var(--risk-low) 30%, var(--risk-medium) 30%, var(--risk-medium) 60%, var(--risk-high) 60%, var(--risk-high) 100%);">
+                    <div style="position:absolute; left:{marker_pos}%; top:-4px; transform:translateX(-50%);
+                                width:2px; height:14px; background-color:var(--text);"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-top:6px;">
+                    <span>0</span><span>30</span><span>60</span><span>100</span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True
         )
-        
+
+        st.write("")
         if churn_prob >= 50:
-            st.error("High Risk of Churn")
+            st.error("High Risk of Churn", icon=None)
         else:
-            st.success("Low Churn Risk")
+            st.success("Low Churn Risk", icon=None)
 
     with res_col2:
         st.subheader("Recommended Retention Actions")
         recommendations = get_recommendations(contract, payment_method, tech_support, online_security)
-        for rec in recommendations:
-            st.write(rec)
-            
-            
-            
-            
+        recs_html = "".join(
+            f"""<div style="border:1px solid var(--border); border-left:3px solid var(--accent);
+                            border-radius:2px; background-color:var(--surface);
+                            padding:12px 16px; margin-bottom:10px; font-size:14px; color:var(--text);">
+                    {rec}
+                </div>"""
+            for rec in recommendations
+        )
+        st.markdown(recs_html, unsafe_allow_html=True)
+
+# Footer — subtle credit line
+st.markdown(
+    """
+    <div style="margin-top:60px; padding-top:16px; border-top:1px solid var(--border);
+                text-align:center; font-size:12px; color:var(--text-muted);">
+        Developed by Rokaia Rezk
+    </div>
+    """,
+    unsafe_allow_html=True
+)
