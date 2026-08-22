@@ -73,20 +73,23 @@ label, [data-testid="stWidgetLabel"] p {
     color: var(--text-muted) !important;
 }
 
-/* Input widgets: flat surfaces, hairline borders, no rounded-bubble look */
+/* Input widgets: plain light fields (readable, standard), not dark surfaces */
 div[data-baseweb="select"] > div, .stNumberInput input {
-    background-color: var(--surface) !important;
-    border: 1px solid var(--border) !important;
+    background-color: #F4F4F4 !important;
+    border: 1px solid #8d8d8d !important;
     border-radius: 2px !important;
-    color: var(--text) !important;
+    color: #161616 !important;
 }
 
-/* Disabled inputs (Auto-calculated Total Charges) use -webkit-text-fill-color
-   separately from color in WebKit browsers — without this override the text
-   is invisible against the dark background */
+div[data-baseweb="select"] svg {
+    fill: #161616 !important;
+}
+
+/* Disabled inputs use -webkit-text-fill-color separately from color in
+   WebKit browsers — without this override the text is invisible */
 .stNumberInput input:disabled {
-    -webkit-text-fill-color: var(--text) !important;
-    color: var(--text) !important;
+    -webkit-text-fill-color: #161616 !important;
+    color: #161616 !important;
     opacity: 1 !important;
 }
 
@@ -283,10 +286,10 @@ with st.container():
             f"""
             <div style="margin-bottom:4px;">
                 <div style="font-size:13px; font-weight:500; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">
-                    Total Charges ($) — Auto-calculated
+                    Total Charges ($)
                 </div>
-                <div style="border:1px solid var(--border); border-radius:2px; background-color:var(--surface);
-                            padding:10px 14px; font-size:15px; color:var(--text); font-family:'IBM Plex Mono', monospace;">
+                <div style="border:1px solid #8d8d8d; border-radius:2px; background-color:#F4F4F4;
+                            padding:10px 14px; font-size:15px; color:#161616; font-family:'IBM Plex Mono', monospace;">
                     {total_charges:,.2f}
                 </div>
             </div>
